@@ -4,65 +4,57 @@ const int XPOW = 10;
 const int BOARD_WIDTH = 500;
 const int BOARD_LENGTH = 500;
 
-void turnMotorsOff()
-{
+void turnMotorsOff() {
 	motor[motorB] = 0;
 	motor[motorC] = 0;
 }
 
-void waitForButton(int button)
-{
-	while(nNxtButtonPressed != button) {}
-	while(nNxtButtonPressed != -1) {}
+void waitForButton(int button) {
+	while (nNxtButtonPressed != button) {}
+	while (nNxtButtonPressed != -1) {}
 }
 
-float getYPower(float xLength, float yDist)
-{
-	displayString(5, "x %d", (yDist/xLength)*XPOW);
-	return (yDist/xLength) * XPOW;
+float getYPower(float xLength, float yDist) {
+	displayString(5, "x %d", (yDist / xLength) * XPOW);
+	return ((yDist/xLength) * XPOW);
 }
 
-void toPoint(float currentY, float nextY, float xLength, float yLength)
-{
+void toPoint(float currentY, float nextY, float xLength, float yLength) {
 	nMotorEncoder[motorB] = 0;
 	motor[motorB] = XPOW;
-	motor[motorC] = getYPower(xLength,yLength*(nextY-currentY));
-	while (fabs(nMotorEncoder[motorB]) < xLength)
-	{
+	motor[motorC] = getYPower(xLength, yLength * (nextY - currentY));
+	while (fabs(nMotorEncoder[motorB]) < xLength) {
 		if (SensorValue[S1] == 1)
 			stopAllTasks();
 	}
 	turnMotorsOff();
 }
 
-float calibrate(float & xLength, float & yLength, TFileHandle & fin)
-{
+float calibrate(float &xLength, float &yLength, TFileHandle &fin) {
 	float resolution, yMin, yMax = 0;
-	readFloatPC(fin,resolution);
-	readFloatPC(fin,yMin);
-	readFloatPC(fin,yMax);
+	readFloatPC(fin, resolution);
+	readFloatPC(fin, yMin);
+	readFloatPC(fin, yMax);
 	xLength = BOARD_WIDTH / resolution;
 	yLength = BOARD_LENGTH / (yMax - yMin);
 	return yMin;
 }
 
-void setReference()
-{
+void setReference() {
 	motor[motorB] = -10;
-	while(nNxtButtonPressed != 3 && SensorValue[S1] == 0){}
+	while (nNxtButtonPressed != 3 && SensorValue[S1] == 0) {}
 	motor[motorB] = 0;
 	nMotorEncoder[motorB] = 0;
 	waitForButton(3);
 	motor[motorC] = -10;
-	while(nNxtButtonPressed != 3 && SensorValue[S1] == 0){}
+	while (nNxtButtonPressed != 3 && SensorValue[S1] == 0) {}
 	motor[motorC] = 0;
 	nMotorEncoder[motorC] = 0;
 	waitForButton(3);
 }
 
-void liftPen(bool lift)
-{
-	if(lift)
+void liftPen(bool lift) {
+	if (lift)
 		motor[motorA] = -50;
 	else
 		motor[motorA] = 50;
@@ -70,12 +62,10 @@ void liftPen(bool lift)
 	motor[motorA] = 0;
 }
 
-task main()
-{
+task main() {
 	TFileHandle fin;
 	bool fileOkay = openReadPC(fin, "output.txt");
-	if(!fileOkay)
-	{
+	if (!fileOkay) {
 		displayString(0,"Could not open file.");
 		wait1Msec(5000);
 		stopAllTasks();
@@ -92,7 +82,6 @@ task main()
 	yMin = calibrate(xLength,yLength,fin);
 	readFloatPC(fin, current);
 	toPoint(yMin, current, xLength, yLength);
-//toPoint(current, current, xLength, yLength);
 	eraseDisplay();
 	displayString(0, "Calibration finished");
 	displayString(1, "Press orange button");
@@ -101,8 +90,7 @@ task main()
 	eraseDisplay();
 	displayString(0, "Working...");
 	liftPen(false);
-	while(readFloatPC(fin, next))
-	{
+	while (readFloatPC(fin, next)) {
 		toPoint(current, next, xLength, yLength);
 		current = next;
 	}
