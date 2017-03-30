@@ -21,8 +21,6 @@ int parseFunction(string function, double constants[], int cExp = MAXDEG) {
 		constants[MAXDEG-cExp] = 1;
 	else
 		constants[MAXDEG-cExp] = atoi(function.substr(0, strIndex - 1).c_str());
-	/* if the function is a polynomial, recursively call the parse function
-	on polynomials one degree less, storing the coefficient each time */	
 	if (current == "x") {
 		if (cExp != 1)
 			parseFunction(function.substr(strIndex + 2, function.length()), constants, cExp - 1);
@@ -86,7 +84,6 @@ void findMinMax(double yVals[RES], double & min, double & max) {
 int main() {
 	string functionToParse = "2x^4+2x^3+0x^2+2x+1";
 	double xMin = 0, xMax = 2*M_PI, yMin = 0, yMax = 10;
-	//ifstream fin("input.txt");
 	ofstream fout("output.txt");
 	double constants[MAXDEG+1] = {0};
 	double yVals[RES] = {0};
