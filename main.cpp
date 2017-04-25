@@ -96,7 +96,6 @@ int main() {
 		cout << constants[i] << " ";
 	}
 	fout << RES << endl << yMin << endl << yMax << endl;
-	
 	for (int i = 0; i < RES; i++) {
 		fout << yVals[i] << " ";
 	}
