@@ -82,7 +82,7 @@ void findMinMax(double yVals[RES], double & min, double & max) {
 }
 
 int main() {
-	string functionToParse = "2x^4+2x^3+0x^2+2x+1";
+	string functionToParse = "2x^4+2x^3+0x^2+5x+1";
 	double xMin = 0, xMax = 2*M_PI, yMin = 0, yMax = 10;
 	ofstream fout("output.txt");
 	double constants[MAXDEG+1] = {0};
